@@ -12,42 +12,35 @@ class GildedRose
 
   def update_quality()
     @items.each do |item|
+      change_sellin(item) unless is_sulfuras?(item)
+      change_quality(item, -1) if is_normal_item?(item)
 
-      change_sellin(item) if !is_sulfuras?(item)
-
-      if is_normal_item?(item)
-        change_quality(item, -1)
-      elsif is_conjured?(item)
-        change_quality(item, -2)
-      else
-          change_quality(item, +1)
-          if is_backstage_pass?(item)
-            if item.sell_in < BSPASS_TEN_DAY_THRESHOLD
-                change_quality(item, +1)
-            end
-            if item.sell_in < BSPASS_FIVE_DAY_THRESHOLD
-                change_quality(item, +1)
-            end
-          end
+      if !is_normal_item?(item)
+        change_quality(item, -2) if is_conjured?(item)
+        change_quality(item, +1) if is_aged_brie?(item)
+        calculate_backstage_quality(item) if is_backstage_pass?(item)
       end
 
-      if item.sell_in < MIN_THRESHOLD
-        if !is_aged_brie?(item)
-          if !is_backstage_pass?(item)
-              if !is_sulfuras?(item)
-                change_quality(item, -1)
-              end
-          else
-            item.quality = 0
-          end
-        else
-            change_quality(item, +1)
-        end
+      if passed_sellby_date?(item)
+        change_quality(item, +1) if is_aged_brie?(item)
+        no_quality(item) if is_backstage_pass?(item)
+        change_quality(item, -1) if is_normal_item?(item)
+        change_quality(item, -2) if is_conjured?(item)
       end
     end
   end
 
   private
+
+  def no_quality(item)
+    item.quality = MIN_THRESHOLD
+  end
+
+  def calculate_backstage_quality(item)
+    change_quality(item, +1) if item.sell_in > BSPASS_TEN_DAY_THRESHOLD
+    change_quality(item, +2) if item.sell_in < BSPASS_TEN_DAY_THRESHOLD && item.sell_in > BSPASS_FIVE_DAY_THRESHOLD
+    change_quality(item, +3) if item.sell_in < BSPASS_FIVE_DAY_THRESHOLD
+  end
 
   def is_normal_item?(item)
     !is_aged_brie?(item) && !is_backstage_pass?(item) && !is_conjured?(item) && !is_sulfuras?(item)
@@ -63,6 +56,10 @@ class GildedRose
 
   def is_in_range?(item)
     item.quality > MIN_THRESHOLD && item.quality < MAX_THRESHOLD
+  end
+
+  def passed_sellby_date?(item)
+    item.sell_in < MIN_THRESHOLD
   end
 
   def is_aged_brie?(item)
