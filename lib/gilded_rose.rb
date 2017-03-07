@@ -12,8 +12,13 @@ class GildedRose
 
   def update_quality()
     @items.each do |item|
+
+      change_sellin(item) if !is_sulfuras?(item)
+
       if is_normal_item?(item)
         change_quality(item, -1)
+      elsif is_conjured?(item)
+        change_quality(item, -2)
       else
           change_quality(item, +1)
           if is_backstage_pass?(item)
@@ -25,9 +30,7 @@ class GildedRose
             end
           end
       end
-      if !is_sulfuras?(item)
-        change_sellin(item)
-      end
+
       if item.sell_in < MIN_THRESHOLD
         if !is_aged_brie?(item)
           if !is_backstage_pass?(item)
@@ -47,7 +50,7 @@ class GildedRose
   private
 
   def is_normal_item?(item)
-    !is_aged_brie?(item) && !is_backstage_pass?(item) && !is_backstage_pass?(item) && !is_sulfuras?(item)
+    !is_aged_brie?(item) && !is_backstage_pass?(item) && !is_conjured?(item) && !is_sulfuras?(item)
   end
 
   def change_quality(item, amount)
