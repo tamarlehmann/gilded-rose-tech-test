@@ -1,6 +1,6 @@
 #!/usr/bin/ruby -w
 
-require File.join(File.dirname(__FILE__), 'gilded_rose')
+require './lib/gilded_rose.rb'
 
 puts "OMGHAI!"
 items = [
@@ -30,3 +30,4 @@ gilded_rose = GildedRose.new items
   end
   puts ""
   gilded_rose.update_quality
+end
