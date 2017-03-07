@@ -12,10 +12,8 @@ class GildedRose
 
   def update_quality()
     @items.each do |item|
-      if !is_aged_brie?(item) and !is_backstage_pass?(item)
-          if !is_sulfuras?(item)
-            change_quality(item, -1)
-          end
+      if is_normal_item?(item)
+            change_quality(item, -1) 
       else
           change_quality(item, +1)
           if is_backstage_pass?(item)
@@ -40,7 +38,7 @@ class GildedRose
             item.quality = 0
           end
         else
-            change_quality(item, +1) 
+            change_quality(item, +1)
         end
       end
     end
