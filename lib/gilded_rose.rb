@@ -12,16 +12,16 @@ class GildedRose
 
   def update_quality()
     @items.each do |item|
-      if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert"
+      if !is_aged_brie?(item) and !is_backstage_pass?(item)
         if item.quality > MIN_QUALITY
-          if item.name != "Sulfuras, Hand of Ragnaros"
+          if !is_sulfuras?(item)
             item.quality = item.quality - 1
           end
         end
       else
         if item.quality < MAX_QUALITY
           item.quality = item.quality + 1
-          if item.name == "Backstage passes to a TAFKAL80ETC concert"
+          if is_backstage_pass?(item)
             if item.sell_in < BSPASS_TEN_DAY_THRESHOLD
               if item.quality < MAX_QUALITY
                 item.quality = item.quality + 1
@@ -35,14 +35,14 @@ class GildedRose
           end
         end
       end
-      if item.name != "Sulfuras, Hand of Ragnaros"
+      if !is_sulfuras?(item)
         item.sell_in = item.sell_in - 1
       end
       if item.sell_in < 0
-        if item.name != "Aged Brie"
-          if item.name != "Backstage passes to a TAFKAL80ETC concert"
+        if !is_aged_brie?(item)
+          if !is_backstage_pass?(item)
             if item.quality > MIN_QUALITY
-              if item.name != "Sulfuras, Hand of Ragnaros"
+              if !is_sulfuras?(item)
                 item.quality = item.quality - 1
               end
             end
@@ -56,5 +56,19 @@ class GildedRose
         end
       end
     end
+  end
+
+  private
+
+  def is_aged_brie?(item)
+    item.name == "Aged Brie"
+  end
+
+  def is_backstage_pass?(item)
+    item.name == "Backstage passes to a TAFKAL80ETC concert"
+  end
+
+  def is_sulfuras?(item)
+    item.name == "Sulfuras, Hand of Ragnaros"
   end
 end
