@@ -13,22 +13,22 @@ class GildedRose
   def update_quality()
     @items.each do |item|
       if !is_aged_brie?(item) and !is_backstage_pass?(item)
-        if item.quality > MIN_THRESHOLD
+        if is_in_range?(item)
           if !is_sulfuras?(item)
             change_quality(item, -1)
           end
         end
       else
-        if item.quality < MAX_THRESHOLD
+        if is_in_range?(item)
           item.quality = item.quality + 1
           if is_backstage_pass?(item)
             if item.sell_in < BSPASS_TEN_DAY_THRESHOLD
-              if item.quality < MAX_THRESHOLD
+              if is_in_range?(item)
                 change_quality(item, +1)
               end
             end
             if item.sell_in < BSPASS_FIVE_DAY_THRESHOLD
-              if item.quality < MAX_THRESHOLD
+              if is_in_range?(item)
                 change_quality(item, +1)
               end
             end
@@ -41,7 +41,7 @@ class GildedRose
       if item.sell_in < MIN_THRESHOLD
         if !is_aged_brie?(item)
           if !is_backstage_pass?(item)
-            if item.quality > MIN_THRESHOLD
+            if is_in_range?(item)
               if !is_sulfuras?(item)
                 change_quality(item, -1)
               end
@@ -50,7 +50,7 @@ class GildedRose
             item.quality = 0
           end
         else
-          if item.quality < MAX_THRESHOLD
+          if is_in_range?(item)
             change_quality(item, +1)
           end
         end
@@ -66,6 +66,10 @@ class GildedRose
 
   def change_quality(item, amount)
     item.quality = item.quality + amount
+  end
+
+  def is_in_range?(item)
+    item.quality > MIN_THRESHOLD && item.quality < MAX_THRESHOLD
   end
 
   def is_aged_brie?(item)
