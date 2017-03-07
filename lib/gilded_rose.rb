@@ -3,6 +3,8 @@ require_relative 'item'
 class GildedRose
   MIN_QUALITY = 0
   MAX_QUALITY = 50
+  BSPASS_TEN_DAY_THRESHOLD = 11
+  BSPASS_FIVE_DAY_THRESHOLD = 6
 
   def initialize(items)
     @items = items
@@ -20,12 +22,12 @@ class GildedRose
         if item.quality < MAX_QUALITY
           item.quality = item.quality + 1
           if item.name == "Backstage passes to a TAFKAL80ETC concert"
-            if item.sell_in < 11
+            if item.sell_in < BSPASS_TEN_DAY_THRESHOLD
               if item.quality < MAX_QUALITY
                 item.quality = item.quality + 1
               end
             end
-            if item.sell_in < 6
+            if item.sell_in < BSPASS_FIVE_DAY_THRESHOLD
               if item.quality < MAX_QUALITY
                 item.quality = item.quality + 1
               end
