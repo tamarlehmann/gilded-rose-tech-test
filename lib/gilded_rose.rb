@@ -12,21 +12,11 @@ class GildedRose
 
   def update_quality()
     @items.each do |item|
-      change_sellin(item) unless is_sulfuras?(item)
-      change_quality(item, -1) if is_normal_item?(item)
-
-      if !is_normal_item?(item)
-        change_quality(item, -2) if is_conjured?(item)
-        change_quality(item, 1) if is_aged_brie?(item)
-        calculate_backstage_quality(item) if is_backstage_pass?(item)
-      end
-
-      if passed_sellby_date?(item)
-        change_quality(item, +1) if is_aged_brie?(item)
-        no_quality(item) if is_backstage_pass?(item)
-        change_quality(item, -1) if is_normal_item?(item)
-        change_quality(item, -2) if is_conjured?(item)
-      end
+      change_sellin(item)
+      calculate_normal_quality(item) if is_normal_item?(item)
+      calculate_conjured_quality(item) if is_conjured?(item)
+      calculate_backstage_quality(item) if is_backstage_pass?(item)
+      calculate_brie_quality(item) if is_aged_brie?(item)
     end
   end
 
@@ -40,6 +30,19 @@ class GildedRose
     change_quality(item, 1) if item.sell_in > BSPASS_TEN_DAY_THRESHOLD
     change_quality(item, 2) if item.sell_in < BSPASS_TEN_DAY_THRESHOLD && item.sell_in > BSPASS_FIVE_DAY_THRESHOLD
     change_quality(item, 3) if item.sell_in < BSPASS_FIVE_DAY_THRESHOLD
+    no_quality(item) if passed_sellby_date?(item)
+  end
+
+  def calculate_conjured_quality(item)
+    passed_sellby_date?(item) ? (change_quality(item, -4)) : (change_quality(item, -2))
+  end
+
+  def calculate_brie_quality(item)
+    change_quality(item, +1)
+  end
+
+  def calculate_normal_quality(item)
+    passed_sellby_date?(item) ? (change_quality(item, -2)) : (change_quality(item, -1))
   end
 
   def is_normal_item?(item)
@@ -47,11 +50,11 @@ class GildedRose
   end
 
   def change_quality(item, amount)
-    item.quality = item.quality + amount if is_in_range?(item) || (is_aged_brie?(item) && item.quality < MAX_THRESHOLD)
+    item.quality += amount if is_in_range?(item) || (is_aged_brie?(item) && item.quality < MAX_THRESHOLD)
   end
 
   def change_sellin(item)
-    item.sell_in = item.sell_in - 1
+    item.sell_in -= 1 unless is_sulfuras?(item)
   end
 
   def is_in_range?(item)
