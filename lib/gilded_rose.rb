@@ -17,7 +17,7 @@ class GildedRose
 
       if !is_normal_item?(item)
         change_quality(item, -2) if is_conjured?(item)
-        change_quality(item, +1) if is_aged_brie?(item)
+        change_quality(item, 1) if is_aged_brie?(item)
         calculate_backstage_quality(item) if is_backstage_pass?(item)
       end
 
@@ -37,9 +37,9 @@ class GildedRose
   end
 
   def calculate_backstage_quality(item)
-    change_quality(item, +1) if item.sell_in > BSPASS_TEN_DAY_THRESHOLD
-    change_quality(item, +2) if item.sell_in < BSPASS_TEN_DAY_THRESHOLD && item.sell_in > BSPASS_FIVE_DAY_THRESHOLD
-    change_quality(item, +3) if item.sell_in < BSPASS_FIVE_DAY_THRESHOLD
+    change_quality(item, 1) if item.sell_in > BSPASS_TEN_DAY_THRESHOLD
+    change_quality(item, 2) if item.sell_in < BSPASS_TEN_DAY_THRESHOLD && item.sell_in > BSPASS_FIVE_DAY_THRESHOLD
+    change_quality(item, 3) if item.sell_in < BSPASS_FIVE_DAY_THRESHOLD
   end
 
   def is_normal_item?(item)
@@ -47,7 +47,7 @@ class GildedRose
   end
 
   def change_quality(item, amount)
-    item.quality = item.quality + amount if is_in_range?(item)
+    item.quality = item.quality + amount if is_in_range?(item) || (is_aged_brie?(item) && item.quality < MAX_THRESHOLD)
   end
 
   def change_sellin(item)
