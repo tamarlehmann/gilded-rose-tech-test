@@ -34,7 +34,7 @@ describe GildedRose do
     end
 
     it 'Quality can never be greater than 50' do
-      items = [Item.new("Aged Brie", 2, 50)]
+      items = [Item.new("Backstage passes to a TAFKAL80ETC concert", 10, 49)]
       GildedRose.new(items).update_quality()
       expect(items[0].quality).to eq 50
     end

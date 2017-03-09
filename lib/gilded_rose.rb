@@ -64,8 +64,8 @@ class GildedRose
 
   def calculate_backstage_quality(item)
     change_quality(item, 1) if item.sell_in > BSPASS_TEN_DAY_THRESHOLD
-    change_quality(item, 2) if item.sell_in < BSPASS_TEN_DAY_THRESHOLD && item.sell_in > BSPASS_FIVE_DAY_THRESHOLD
-    change_quality(item, 3) if item.sell_in < BSPASS_FIVE_DAY_THRESHOLD
+    change_quality(item, (item.quality + 2 > MAX_THRESHOLD) ? (MAX_THRESHOLD - item.quality) : (2)) if item.sell_in < BSPASS_TEN_DAY_THRESHOLD && item.sell_in > BSPASS_FIVE_DAY_THRESHOLD
+    change_quality(item, (item.quality + 2 > MAX_THRESHOLD) ? (MAX_THRESHOLD - item.quality) : (3)) if item.sell_in < BSPASS_FIVE_DAY_THRESHOLD
     no_quality(item) if passed_sellby_date?(item)
   end
 
